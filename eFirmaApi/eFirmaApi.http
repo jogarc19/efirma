@@ -1,0 +1,6 @@
+@eFirmaApi_HostAddress = http://localhost:5111
+
+GET {{eFirmaApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
