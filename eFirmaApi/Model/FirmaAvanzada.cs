@@ -57,7 +57,7 @@ namespace eFirmaApi.Model
             }
             return response;
         }
-        public static X509Certificate2 isValidPFX(byte[] content, string password)
+        public static X509Certificate2 isValidPFX(byte[] contentPfx, string password)
         {
             try
             {
@@ -66,7 +66,7 @@ namespace eFirmaApi.Model
                     X509KeyStorageFlags.DefaultKeySet |
                     X509KeyStorageFlags.Exportable);*/
                 
-                var cert = new X509Certificate2(content, password,
+                var cert = new X509Certificate2(contentPfx, password,
                     X509KeyStorageFlags.EphemeralKeySet); // en produccion no es recomendable DefaultKeySet y si no se requiere persistencia tampoco se requiere el Exportable
                 
                 //return cert.HasPrivateKey;

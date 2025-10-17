@@ -133,7 +133,7 @@ namespace eFirmaApi.Controllers
             //var streamPfx = request.archivoPfx_Efirma!.OpenReadStream();
             try
             {
-                var pfxUsr = _DBContextNotificacionAPI.FIRMA_PFX.Find(request.idUsuario);
+                /*var pfxUsr = _DBContextNotificacionAPI.FIRMA_PFX.Find(request.idUsuario);
                 if (pfxUsr == null)
                 {
                     response.message = $"El usuario: {request.idUsuario} no existe";
@@ -143,13 +143,19 @@ namespace eFirmaApi.Controllers
                 {
                     response.message = $"El usuario: {request.idUsuario} no cuenta con su eFIRMA";
                     return Ok(response);
-                }
+                }*/
+                //VALIDAMOS EL USUARIO CON SU CONTRASEÑA Y PFX
+                int[] arrayUser = { request.idUsuario };
+                string[] arrayPass = { request.password_Efirma };
+                //validamos y obtiene los pfx de los usuarios
+                List<FIRMA_PFX> pfxs = this.obtienePfxs(arrayUser, arrayPass);
+                //FIN DE VALIDACION DE USUARIO
 
-                byte[] file = pfxUsr.pfxFileContent;
+                byte[] file = pfxs[0].pfxFileContent;
                 using var streamPfx = new MemoryStream(file);
                 //cargamos los archivos al content para enviarlos al request
                 content.Add(new StreamContent(streamFile), "ArchivoFirmar", request.archivoFirmar.FileName);
-                content.Add(new StreamContent(streamPfx), "ArchivoPFX", pfxUsr.pfxFileName);
+                content.Add(new StreamContent(streamPfx), "ArchivoPFX", pfxs[0].pfxFileName);
 
                 GenericResponse<Firma_API_NOdeJSResponse> responseFirma = new GenericResponse<Firma_API_NOdeJSResponse>();
                 //invocamos la api que genera el pkcs7
@@ -239,6 +245,7 @@ namespace eFirmaApi.Controllers
             }
             catch (Exception ex)
             {
+                response.message = "Surgió un error al momento de firmar";
                 response.errors = new List<string> { ex.Message };
             }
 
@@ -499,7 +506,7 @@ namespace eFirmaApi.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost("ValidaFima")]
+        [HttpPost("ValidaFirma")]
         public async Task<IActionResult> validateFirma([FromBody] ValidafirmaReques request)
         {
             GenericResponse<PFXInfoResponse> response = new GenericResponse<PFXInfoResponse>();
